@@ -210,6 +210,13 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
         }
 
         .gallery-item img {
@@ -225,6 +232,75 @@
             padding: 0.9rem 1rem 1.2rem;
         }
 
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-image {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 260px;
@@ -234,12 +310,28 @@
             .card {
                 padding: 1.3rem;
             }
+
+            .modal-content {
+                max-width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-image {
+                max-height: 85vh;
+            }
         }
     </style>
 </head>
 <body>
     <button class="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
     <div class="overlay" onclick="closeSidebar()"></div>
+
+    <div class="modal" id="imageModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <img class="modal-image" id="modalImage" src="" alt="Enlarged image">
+        </div>
+    </div>
 
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -276,15 +368,15 @@
                 <h2>Photos</h2>
                 <p>A few snapshots that tell a story about my life and the moments I cherish.</p>
                 <div class="gallery">
-                    <div class="gallery-item">
+                    <div class="gallery-item" onclick="openModal('IMG_2597.jpg')">
                         <img src="IMG_2597.jpg" alt="Photo 1" onerror="this.style.display='none'">
                         <div class="caption"><strong>Moment 1</strong><br>A cherished memory</div>
                     </div>
-                    <div class="gallery-item">
+                    <div class="gallery-item" onclick="openModal('IMG_2956%20Copy.JPG')">
                         <img src="IMG_2956%20Copy.JPG" alt="Photo 2" onerror="this.style.display='none'">
                         <div class="caption"><strong>Moment 2</strong><br>Special times</div>
                     </div>
-                    <div class="gallery-item">
+                    <div class="gallery-item" onclick="openModal('IMG_0484.JPG')">
                         <img src="IMG_0484.JPG" alt="Photo 3" onerror="this.style.display='none'">
                         <div class="caption"><strong>Moment 3</strong><br>Beautiful moments</div>
                     </div>
@@ -345,6 +437,28 @@
 
             closeSidebar();
         }
+
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageSrc;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (event && event.target.id !== 'imageModal') return;
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
